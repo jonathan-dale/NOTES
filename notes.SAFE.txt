@@ -80,11 +80,11 @@ awk '!a[$0]++'
 printf "Quay Passowrd " ; read -sr QUAY_PASS_IN ; export QUAY_PASS=$QUAY_PASS_IN ; echo
 
 # portforwarding example
-ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@54.198.15.17 -N
+ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
 
 # scp through a tunnel
 # set up tunnel
-ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/keys_combine/Combine.pem ec2-user@54.198.15.17 -N
+ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
 # scp file to remote host
 scp -P 3322 -i key_name.pem /path/to/file centos@localhost:/home/centos
 
@@ -323,7 +323,7 @@ pip install awscli
 	ssh -L <localport>:remote_host:remote_port -i /path/to/.pem <USER>@<proxy_ip> -N
 
 	# Real command:
-	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/keys_combine/Combine.pem ec2-user@54.198.15.17 -N
+	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
 
 # If firewalld is needed
 	sudo systemctl enable firewalld

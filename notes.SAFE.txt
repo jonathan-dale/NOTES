@@ -80,11 +80,11 @@ awk '!a[$0]++'
 printf "Quay Passowrd " ; read -sr QUAY_PASS_IN ; export QUAY_PASS=$QUAY_PASS_IN ; echo
 
 # portforwarding example
-ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
+ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
 
 # scp through a tunnel
 # set up tunnel
-ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
+ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
 # scp file to remote host
 scp -P 3322 -i key_name.pem /path/to/file centos@localhost:/home/centos
 
@@ -172,6 +172,9 @@ host -al <domain.name> | grep <what u want>
 ## SELinux junk
 restorecon /var/www/html*					#restores files to default SELinux security contexts
 cat /var/log/audit/audit.log | grep AVC | audit2allow -m httpd  #tells you what's being blocked (or allowed when setenforce=0)
+# disable selinux
+sudo setenforce 0
+sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
 
 
 ## private subnet CIDR blocks
@@ -323,7 +326,7 @@ pip install awscli
 	ssh -L <localport>:remote_host:remote_port -i /path/to/.pem <USER>@<proxy_ip> -N
 
 	# Real command:
-	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/keys_file/key.pem ec2-user@ip_address -N
+	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
 
 # If firewalld is needed
 	sudo systemctl enable firewalld
@@ -416,6 +419,9 @@ chmod -x get_helm.sh
 kubectl config get-contexts
 kubectl config use-contexts <new-context>
 
+## see info about cluster
+kubectl -n kube-system get cm kubeadm-config -oyaml
+
 ###  kubens and kubectx easily change namespaces and clusters
 # https://github.com/ahmetb/kubectx
 ---
@@ -434,6 +440,17 @@ kubectl --context k8.prod.domain_name.io --namespace service get nodes
 # To quickly change the default namespace, you can set up the following alias: 
 # Then, you can switch between namespaces like this: kcd some-namespace.
 alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
+
+# To join a cluser
+sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
+
+# Cluster tokens
+##use 'kubeadm token --help' for more
+sudo kubeadm token list
+sudo kubeadm token create ## option --print-join-command
+
+# Check if the cluster api is listining on 6443
+nc -z <master_node_hostname> 6443 && echo 'ok'
 
 
 

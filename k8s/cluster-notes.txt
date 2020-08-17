@@ -1,0 +1,11 @@
+
+# get ip address first, then test busy box pod can curl nginx pod on a different node
+kubectl get nodes -o wide
+kubectl exec busybox -- curl $nginx_pod_ip
+
+# after deploying service, test the service with curl on nginx host
+kubectl get service
+curl localhost:30080  # should return nginx html welcome page
+
+
+

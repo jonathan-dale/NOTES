@@ -158,9 +158,7 @@ ssh remote-host /bin/true > out.dat
 #######
    
 ## RHEL server
-# yum repolist enabled
-# yum repolist disabled
-# yum repolist all
+# yum repolist [ enabled | disabled | all ]
 # yum --disablerepo="*" --enablerepo="ksplice-uptrack" list available
 # yum --enablerepo="<repo.name>"
 
@@ -441,18 +439,63 @@ kubectl --context k8.prod.domain_name.io --namespace service get nodes
 # Then, you can switch between namespaces like this: kcd some-namespace.
 alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
 
+
+####################
+## Cluster tokens ##
+####################
+
+# use 'kubeadm token --help'
+sudo kubeadm token list
+sudo kubeadm token create ## option --print-join-command
+
 # To join a cluser
 sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
 
-# Cluster tokens
-##use 'kubeadm token --help' for more
-sudo kubeadm token list
-sudo kubeadm token create ## option --print-join-command
+
+## (control plane node)
+kubeadm join <endpoint-ip-or-dns>:<port> \
+--token <valid-bootstrap-token> \
+--discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash> \
+--control-plane \
+--certificate-key <certificate-key>
+
+## (worker node)
+kubeadm join <endpoint-ip-or-dns>:<port> \
+--token <valid-bootstrap-token> \
+--discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
+
+
+# to generate the join command above ^^^
+
+# <endpoint-ip-or-dns>:<port> can be retrieved in "kubeadm-config" configmap in "kube-system" namespace, port should be 6443
+	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint"
+
+# <valid-bootstrap-token> --> You can not recreate, make a new one
+	$ kubeadm token create
+
+# <ca-cert-sha256-hash> --> Use this command to generate
+	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256
+
+# <certificate-key> --> The value expires after 2 hours, mkae a new one
+	$ kubeadm init phase upload-certs --upload-certs
+
+####################
+## Cluster tokens ##
+####################
+
 
 # Check if the cluster api is listining on 6443
 nc -z <master_node_hostname> 6443 && echo 'ok'
 
+## taints and tolerations, add taints to nodes, tolerations to pods
+# add taint
+kubectl taint nodes node1 key=value:NoSchedule
+# remove taint
+kubectl taint nodes node1 key:NoSchedule-
 
+
+## remove pods
+kubectl delete pod <pod-name>   # options [ --grace-period=0 --force ]
 
 
 #########################

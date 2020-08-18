@@ -348,6 +348,30 @@ sudo systemctl enable vncserver@:1
 sudo systemctl start vncserver@:1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#########################
+### google Chrome repo ##
+#########################
+# add the repo
+touch /etc/yum.repos.d/google-chrome.repo
+sudo tee /etc/yum.repos.d/google-chrome.repo <<-'EOF'
+ [google-chrome]
+ name=google-chrome
+ baseurl=http://dl.google.com/linux/chrome/rpm/stable/$basearch
+ enabled=1
+ gpgcheck=1
+ gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
+ EOF
+
+# check that google-chrome.repo is enabled
+yum repolist all
+
+# install chrome
+yum search all chrome
+yum install -y google-chrome-stable.x86_64
+
+########## end chrome ######################
+
+
 
 ############
 ## docker ##
@@ -416,12 +440,15 @@ chmod -x get_helm.sh
 ## contexts is the cluster kubectl commands run against
 kubectl config get-contexts
 kubectl config use-contexts <new-context>
+###  kubens and kubectx easily change namespaces and clusters # https://github.com/ahmetb/kubectx
+---
+# To quickly change the default namespace, you can set up the following alias: 
+# Then, you can switch between namespaces like this: kcd some-namespace.
+alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
+
 
 ## see info about cluster
 kubectl -n kube-system get cm kubeadm-config -oyaml
-
-###  kubens and kubectx easily change namespaces and clusters
-# https://github.com/ahmetb/kubectx
 ---
 ## list deployments in services namespace
 kubectl --context k8.prod.domain_name.io --namespace services get deployments 
@@ -449,8 +476,8 @@ sudo kubeadm token list
 sudo kubeadm token create ## option --print-join-command
 
 # To join a cluser
-sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
 
+sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
 
 ## (control plane node)
 kubeadm join <endpoint-ip-or-dns>:<port> \
@@ -465,22 +492,23 @@ kubeadm join <endpoint-ip-or-dns>:<port> \
 --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
 
 
-# to generate the join command above ^^^
+# ^^^ to generate the join command above ^^^
 
 # <endpoint-ip-or-dns>:<port> can be retrieved in "kubeadm-config" configmap in "kube-system" namespace, port should be 6443
-	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint"
+	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint" or "advertiseAddress" or "apiEndpoints"
 
 # <valid-bootstrap-token> --> You can not recreate, make a new one
 	$ kubeadm token create
 
-# <ca-cert-sha256-hash> --> Use this command to generate
-	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256
+# <ca-cert-sha256-hash> --> Use either command to generate
+	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
+	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 
 # <certificate-key> --> The value expires after 2 hours, mkae a new one
 	$ kubeadm init phase upload-certs --upload-certs
 
 ####################
-## Cluster tokens ##
+## Cluster tokens ## 
 ####################
 
 
@@ -493,33 +521,19 @@ kubectl taint nodes node1 key=value:NoSchedule
 # remove taint
 kubectl taint nodes node1 key:NoSchedule-
 
-
-## remove pods
+#######################
+## remove pods/nodes ##
+#######################
 kubectl delete pod <pod-name>   # options [ --grace-period=0 --force ]
 
+#  Node removal
+kubectl get nodes
+kubectl drain <nodeToBeRemoved>
+kubectl delete node <nodeToBeRemoved>
+##  Remove join/init settings on node you removed 
+kubeadm reset
 
-#########################
-### google Chrome repo ##
-#########################
-# add the repo
-touch /etc/yum.repos.d/google-chrome.repo
-sudo tee /etc/yum.repos.d/google-chrome.repo <<-'EOF'
- [google-chrome]
- name=google-chrome
- baseurl=http://dl.google.com/linux/chrome/rpm/stable/$basearch
- enabled=1
- gpgcheck=1
- gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
- EOF
-
-# check that google-chrome.repo is enabled
-yum repolist all
-
-# install chrome
-yum search all chrome
-yum install -y google-chrome-stable.x86_64
-
-########## end chrome ######################
+########## end ##########
 
 
 

@@ -1,3 +1,6 @@
+### Install flannel — Only on the Master!
+        k apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
 
   ### get node ip address, then test busy box pod can curl nginx pod on a different node
 kubectl get nodes -o wide

@@ -3,541 +3,588 @@
 ##################################
 
 
-# PS1 
-#[\u@ \e[0;37m dev.1 \e[m \W] $
-
-#############
-# GIT NOTES #
-#############
+##  # PS1 
+##  #[\u@ \e[0;37m dev.1 \e[m \W] $
+##  
+##  #############
+##  # GIT NOTES #
+##  #############
+##  # generate a key: ssh-keygen -b 4096 -C <name>
+##  git reset HEAD .
+##  git status
+##  git diff
+##  
+##  # to pull while in a differnet directory
+##  pushd /path/to/repo && git pull && popd
+##  	example: pushd /home/centos/my-repo && git pull && popd
+##  
+##  ---
+##  # this allows you to change the email
+##  git config --global user.email "526473+gb96@users.noreply.github.com"
+##  git rebase -i
+##  git commit --amend --reset-author
+##  git rebase --continue
+##  git push
+##  
+##  --- 
+##  # create git repo
+##  mkdir name
+##  cd name
+##  git init
+##  git remote add origin git@github.com:jonathan-dale/<repo_name>.git
+##  git fetch git@github.com:jonathan-dale/<repo_name>.git
+##  git pull origin master
+##  git checkout <branch_name>  #use -b on mac
+##  git branch -[a:r] ; or git show-branch -[a:r]
+##  
+##  
+##  
+##  ################
+##  ## shell foo ###
+##  ################
+##  
+##  # redirection
+##  CMD > /dev/null 2>&1
+##  # STDOUT of the command 'CMD' redirects to /dev/null, 
+##  # and then STDERR redirects to THE ADDRESS of STDOUT,
+##  # which has been set to /dev/null ,
+##  # consequently both STDOUT and STDERR point to /dev/null
+##  
+##  ## split screens (iterm)
+##  'cmd + d' vertical
+##  'cmd + shift + d' horizontal
+##  # navigate between
+##  'cmd + [' 
+##  'cmd + ]' 
+##  
+##  
+##  ## grep
+##  # grep -rn '/path/to/somewhere/' -e 'pattern'
+##  # -r = recursive
+##  # -n = number 
+##  # -w = match the whole word
+##  # -l (lower case) 
+##  
+##  # turn off highlighting search 
+##  # :noh
+##  
+##  # make a random value for password
+##  head /dev/urandom | sha256sum | cut -c1-16
+##  
+##  ## awk
+##  # removes the 1st line awk 
+##  # oc get nodes | awk 'NR>1{print $1}'
+##  # remove duplicates
+##  awk '!a[$0]++'
+##  
+##  # setting a password in env var
+##  # this asks to input the password, then stores it in a variable
+##  printf "Quay Passowrd " ; read -sr QUAY_PASS_IN ; export QUAY_PASS=$QUAY_PASS_IN ; echo
+##  
+##  # portforwarding example
+##  ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
+##  
+##  # scp through a tunnel
+##  # set up tunnel
+##  ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
+##  # scp file to remote host
+##  scp -P 3322 -i key_name.pem /path/to/file centos@localhost:/home/centos
+##  
+##  # display json files in json format (for Openshift logs)
+##  cat *.json | python -m json.tool
+##  
+##  # cron job notation
+##  # For details see man 4 crontabs
+##  
+##  # Example of job definition:
+##  # .---------------- minute (0 - 59)
+##  # |  .------------- hour (0 - 23)
+##  # |  |  .---------- day of month (1 - 31)
+##  # |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+##  # |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+##  # |  |  |  |  |
+##  # *  *  *  *  * user-name  command to be executed
+##  #
+##  # if user-name is blank the job runs as the owner of the crontab file.
+##  #
+##  #example
+##  0, 15, 30, 45 * * * * /foo.sh
+##  which means run foo.sh at the 0, 15, 30 and 45 min mark, of every hour (1st *), every day of the month (2nd *), every month (3rd *), every day of the week (4th *).
+##  
+##  # vi ##http://www.linfo.org/vi/search.html
+##  :s/string # search for 'string'
+##  :%s/pattern/replace/ #replaces every occurrence of 'pattern' with 'replace'
+##  
+##  ## expansion operators
+##  #  ${varname:-word} which set the varnane to word if its not defined example: 'scale=${2:-1}' scale is set to "$2" or "1" if no "$2" is passed.
+##  #  ${varname:=word} which sets the undefined varname instead of returning the word value;
+##  #  ${varname:?message} which either returns varname if it's defined and is not null or prints the message and aborts the script (like the first example);
+##  #  ${varname:+word} which returns word only if varname is defined and is not null; returns null otherwise.
+##  
+##  
+##  ## sed
+##  sed -i "s/'/\"/g" <file>
+##  sed -i 's/old_text/new_text/g' <file>
+##  ## on mac ---> sed -i '' "s/old_text/new_text/g" <file>
+##  # delete all empty lines from a file called /tmp/data.txt
+##  $ sed '/^$/d' /tmp/data.txt > /tmp/output.txt
+##  
+##  ## rsync
+##  # push
+##  rsync -a ~/dir1 username@remote_host:destination_path
+##  # pull
+##  rsync -a user@remote_host:/home/user/dir1/ place_to_sync_on_local
+##  rsync -Pav -e "ssh -i $HOME/.ssh/somekey" username@hostname:/from/dir/ /to/dir/
+##  
+##  # check that the remote host dose not add text junk to the screen on non-interactive tty's 
+##  ssh remote-host /bin/true > out.dat
+##  # out.dat should be empty;
+##  # if not, add this to .bashrc:
+##  #   if shopt -q login_shell; then
+##  #     [any code that outputs text here]
+##  #   fi 
+##  
+##  
+##  ## exit code junk
+##  #echo $? ## will display exit code of last run command
+##  #######
+##  #######   #!/bin/bash
+##  #######   touch /root/test 2> /dev/null
+##  #######   if [ $? -eq 0 ]
+##  #######   then
+##  #######     echo "Successfully created file"
+##  #######	    exit 0
+##  #######   else
+##  #######     echo "Could not create file" >&2
+##  #######     exit 1
+##  #######   fi
+##  #######
+##     
+##  ## RHEL server
+##  # yum repolist [ enabled | disabled | all ]
+##  # yum --disablerepo="*" --enablerepo="ksplice-uptrack" list available
+##  # yum --enablerepo="<repo.name>"
+##  
+##  ## DNS and  Host_junk
+##  # find all A CNAME's 
+##  host -al <domain.name> | grep <what u want>
+##  	# ex: host -al turtle.oi.io | grep jdale ----> returns hosts in dns that have name like jdale
+##  
+##  ## SELinux junk
+##  restorecon /var/www/html*					#restores files to default SELinux security contexts
+##  cat /var/log/audit/audit.log | grep AVC | audit2allow -m httpd  #tells you what's being blocked (or allowed when setenforce=0)
+##  # disable selinux
+##  sudo setenforce 0
+##  sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
+##  
+##  ## openssl
+##  # change PW on a key
+##  openssl rsa -des3 -in server.key -out server.key.new
+##  
+##  ## private subnet CIDR blocks
+##  # 10.0.0.0 - 10.255.255.255 (10/8 prefex)
+##  # 172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
+##  # 192.168.0.0 - 192.168.255.255 (192.168/16 prefix)
+##  
+##  
+##  
+##  ##############
+##  ## AWS Junk ##
+##  ##############
+##  # for ec2-insance meta data
+##  curl http://169.254.169.254/latest/meta-data/
+##  
+##  # decode aws encoded message
+##  aws sts decode-authorization-message --encoded-messag <encoded_message>
+##  
+##  # change user password cli
+##  aws iam update-login-profile --user-name jonathan.dale --password <password>
+##  
+##  
+##  ######################
+##  ## filesystem notes ##
+##  ######################
 ## usefull commands
-# generate a key: "ssh-keygen -b 4096 -C <name>"
-git reset HEAD .
-git status
-git diff
-git config remote.origin.url git@github.com:<repo_name>/<repo_name>.git
-git branch -a #show branches or $ git show-branch -[a:r]
-
----
-# this allows you to change the email
-git config --global user.email "526473+gb96@users.noreply.github.com"
-git rebase -i
-git commit --amend --reset-author
-git rebase --continue
-git push
-
---- 
-# create git repo
-mkdir name
-cd name
-git init
-git remote add origin git@github.com:jonathan-dale/<repo_name>.git
-git fetch git@github.com:jonathan-dale/<repo_name>.git
-git pull origin master
-git checkout <branch_name>  #use -b on mac
-
-
-
-################
-## shell foo ###
-################
-
-# redirection
-CMD > /dev/null 2>&1
-# STDOUT of the command 'CMD' redirects to /dev/null, 
-# and then STDERR redirects to THE ADDRESS of STDOUT,
-# which has been set to /dev/null ,
-# consequently both STDOUT and STDERR point to /dev/null
-
-## split screens (iterm)
-'cmd + d' vertical
-'cmd + shift + d' horizontal
-# navigate between
-'cmd + [' 
-'cmd + ]' 
-
-
-## grep
-# grep -rn '/path/to/somewhere/' -e 'pattern'
-# -r = recursive
-# -n = number 
-# -w = match the whole word
-# -l (lower case) 
-
-# turn off highlighting search 
-# :noh
-
-# make a random value for password
-head /dev/urandom | sha256sum | cut -c1-16
-
-## awk
-# removes the 1st line awk 
-# oc get nodes | awk 'NR>1{print $1}'
-# remove duplicates
-awk '!a[$0]++'
-
-# setting a password in env var
-# this asks to input the password, then stores it in a variable
-printf "Quay Passowrd " ; read -sr QUAY_PASS_IN ; export QUAY_PASS=$QUAY_PASS_IN ; echo
-
-# portforwarding example
-ssh -L 48081:ip-10-0-103-5.ec2.internal:8081 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
-
-# scp through a tunnel
-# set up tunnel
-ssh -L 3322:ip-10-0-102-93.ec2.internal:22 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
-# scp file to remote host
-scp -P 3322 -i key_name.pem /path/to/file centos@localhost:/home/centos
-
-# display json files in json format (for Openshift logs)
-cat *.json | python -m json.tool
-
-# cron job notation
-# For details see man 4 crontabs
-
-# Example of job definition:
-# .---------------- minute (0 - 59)
-# |  .------------- hour (0 - 23)
-# |  |  .---------- day of month (1 - 31)
-# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
-# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
-# |  |  |  |  |
-# *  *  *  *  * user-name  command to be executed
-#
-# if user-name is blank the job runs as the owner of the crontab file.
-#
-#example
-0, 15, 30, 45 * * * * /foo.sh
-which means run foo.sh at the 0, 15, 30 and 45 min mark, of every hour (1st *), every day of the month (2nd *), every month (3rd *), every day of the week (4th *).
-
-# vi ##http://www.linfo.org/vi/search.html
-:s/string # search for 'string'
-:%s/pattern/replace/ #replaces every occurrence of 'pattern' with 'replace'
-
-## expansion operators
-#  ${varname:-word} which set the varnane to word if its not defined example: 'scale=${2:-1}' scale is set to "$2" or "1" if no "$2" is passed.
-#  ${varname:=word} which sets the undefined varname instead of returning the word value;
-#  ${varname:?message} which either returns varname if it's defined and is not null or prints the message and aborts the script (like the first example);
-#  ${varname:+word} which returns word only if varname is defined and is not null; returns null otherwise.
-
-
-## sed
-sed -i "s/'/\"/g" <file>
-sed -i 's/old_text/new_text/g' <file>
-## on mac ---> sed -i '' "s/old_text/new_text/g" <file>
-# delete all empty lines from a file called /tmp/data.txt
-$ sed '/^$/d' /tmp/data.txt > /tmp/output.txt
-
-## rsync
-# push
-rsync -a ~/dir1 username@remote_host:destination_path
-# pull
-rsync -a user@remote_host:/home/user/dir1/ place_to_sync_on_local
-
-# check that the remote host dose not add text junk to the screen on non-interactive tty's 
-ssh remote-host /bin/true > out.dat
-# out.dat should be empty;
-# if not, add this to .bashrc:
-#   if shopt -q login_shell; then
-#     [any code that outputs text here]
-#   fi 
-
-
-## exit code junk
-#echo $? ## will display exit code of last run command
-#######
-#######   #!/bin/bash
-#######   touch /root/test 2> /dev/null
-#######   if [ $? -eq 0 ]
-#######   then
-#######     echo "Successfully created file"
-#######	    exit 0
-#######   else
-#######     echo "Could not create file" >&2
-#######     exit 1
-#######   fi
-#######
-   
-## RHEL server
-# yum repolist [ enabled | disabled | all ]
-# yum --disablerepo="*" --enablerepo="ksplice-uptrack" list available
-# yum --enablerepo="<repo.name>"
-
-## DNS and  Host_junk
-# find all A CNAME's 
-host -al <domain.name> | grep <what u want>
-	# ex: host -al turtle.oi.io | grep jdale ----> returns hosts in dns that have name like jdale
-
-## SELinux junk
-restorecon /var/www/html*					#restores files to default SELinux security contexts
-cat /var/log/audit/audit.log | grep AVC | audit2allow -m httpd  #tells you what's being blocked (or allowed when setenforce=0)
-# disable selinux
-sudo setenforce 0
-sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
-
-
-## private subnet CIDR blocks
-# 10.0.0.0 - 10.255.255.255 (10/8 prefex)
-# 172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
-# 192.168.0.0 - 192.168.255.255 (192.168/16 prefix)
-
-
-
-##############
-## AWS Junk ##
-##############
-# for ec2-insance meta data
-curl http://169.254.169.254/latest/meta-data/
-
-# decode aws encoded message
-aws sts decode-authorization-message --encoded-messag <encoded_message>
-
-# change user password cli
-aws iam update-login-profile --user-name jonathan.dale --password <password>
-
-
-######################
-## filesystem notes ##
-######################
-# for detailed file system info use these commands:
-## USE `df -hT` to get the fs type!!!!
-sudo fdisk -l
-sudo pvdisplay
-sudo vgdisplay
-sudo lvdisplay
-# to extend the partition
-sudo growpart /dev/xvda 1 ### notice the space between device name and partition number (get this from df -h)
-# grow the filesystem
-# for xfs filesystems use this tool: 
-sudo yum install xfsprogs
-sudo xfs_growfs -d <mount_point>  #### find <mount_point> with df -h
-# the xfs_grwofs command should be on RHEL by default....
-# LINKS:
-# AWS: https://docs.amazonaws.cn/en_us/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html
-# stack_overflow: https://stackoverflow.com/questions/26305376/resize2fs-bad-magic-number-in-super-block-while-trying-to-open
-
-###############
-# tmux notes ##
-###############
-# attach sessions --> tmux attach -t <session>
-# detach sessions --> ctrl+b d
-# list sessions   --> ctrl+b ls
-# quit sessions   --> ctrl+b & ##then comfirm at bottom
-# split screen    --> ctrl+b [&|"] 
-# change screen   --> ctrl+b <arrows>
-
-
-
-###############
-## databases ##
-###############
-
-############ mysql ##############
-# change a colum or value --> http://www.mysqltutorial.org/mysql-update-data.aspx 
-UPDATE `Param` SET Updated = '2019-09-17 11:35:45’
-
-# disconect users
-SELECT pg_terminate_backend(pg_stat_activity.pid)
-FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'TARGET_DB'
-  AND pg_stat_activity.state = 'idle'
-  AND pid <> pg_backend_pid();
-
-# check size
-select pg_size_pretty(pg_database_size('osm'));
-
-# create user
-CREATE USER myuser WITH PASSWORD 'secret_passwd';
-
-# create roll
-CREATE ROLL myuser WITH LOGIN PASSWORD 'secret_passwd';
-
-# check users and rolls
-SELECT 
-      r.rolname, 
-      ARRAY(SELECT b.rolname
-            FROM pg_catalog.pg_auth_members m
-            JOIN pg_catalog.pg_roles b ON (m.roleid = b.oid)
-            WHERE m.member = r.oid) as memberof
-FROM pg_catalog.pg_roles r
-WHERE r.rolname NOT IN ('pg_signal_backend','rds_iam',
-                        'rds_replication','rds_superuser',
-                        'rdsadmin','rdsrepladmin')
-ORDER BY 1;
-
-# rename a database on the host
-alter database <target_db> rename to <new_name>;
-
-
-# to see the version of mysql
-SHOW VARIABLES LIKE "%version%";
-
-####### postgresql ###########
-# list databases
-\list or \l
-# change db's:   most db's have defaults of template0, template1, and postgres
-\c <db_name>     ### example: \c postgres
-# listing tables after connecting to it
-\dt
-# drop database 
-PGPASSWORD="$DBPWD" psql -h "$DBHOST" -U "$DBUSER" -d "$DBNAME" <<-EOF
-        SELECT pid, pg_terminate_backend(pid)
-        FROM pg_stat_activity
-        WHERE datname = current_database() AND pid <> pg_backend_pid();
-
-        \c postgres
-        DROP DATABASE IF EXISTS $DBNAME;
-
-#################### 
-## end database junk 
-####################
-
-
-
-#### home brew install ####
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-
-#### get pip for python ####
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-sudo python get-pip.py
-
-#### install the aws cli ####
-# use pip
-pip install awscli
-
-
-
-
-####################
-## tigerVNC notes ##
-####################
-# install this
-	sudo yum update -y
-	sudo yum install -y gnome-classic-session.noarch  
-	sudo yum groupinstall -y gnome-desktop ##sudo yum install -y gnome-desktop3-devel.x86_64
-	sudo yum install -y tigervnc.x86_64 tigervnc-server.x86_64
-
-# Start the vnc server
-	vncserver
-
-# Set up the tunnel on a new window:
-	# example command:
-	ssh -L <localport>:remote_host:remote_port -i /path/to/.pem <USER>@<proxy_ip> -N
-
-	# Real command:
-	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
-
-# If firewalld is needed
-	sudo systemctl enable firewalld
-	sudo systemctl start firewalld
-	sudo firewall-cmd --permanent --zone=public --add-port=5900-5905/tcp
-	sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
-	sudo systemctl daemon-reload
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ON AMAZON LINUX2 USE THIS — https://aws.amazon.com/premiumsupport/knowledge-center/ec2-linux-2-install-gui/
-
-sudo amazon-linux-extras install mate-desktop1.x
-sudo bash -c 'echo PREFERRED=/usr/bin/mate-session > /etc/sysconfig/desktop'
-echo "/usr/bin/mate-session" > ~/.Xclients && chmod +x ~/.Xclients
-sudo yum install -y tigervnc-server
-vncserver :1
-sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@.service
-sudo sed -i 's/<USER>/ec2-user/' /etc/systemd/system/vncserver@.service
-sudo systemctl daemon-reload
-sudo systemctl enable vncserver@:1
-sudo systemctl start vncserver@:1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#########################
-### google Chrome repo ##
-#########################
-# add the repo
-touch /etc/yum.repos.d/google-chrome.repo
-sudo tee /etc/yum.repos.d/google-chrome.repo <<-'EOF'
- [google-chrome]
- name=google-chrome
- baseurl=http://dl.google.com/linux/chrome/rpm/stable/$basearch
- enabled=1
- gpgcheck=1
- gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
- EOF
-
-# check that google-chrome.repo is enabled
-yum repolist all
-
-# install chrome
-yum search all chrome
-yum install -y google-chrome-stable.x86_64
-
-########## end chrome ######################
-
-
-
-############
-## docker ##
-############
-## to install the latest version of Docker CE (community edition):
-sudo yum remove docker docker-common docker-selinux docker-engine
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install docker-ce
-
-
-#### ADD DOCKER REPO ####
-sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
- [dockerrepo]
- name=Docker Repository
- baseurl=https://yum.dockerproject.org/repo/main/centos/7/
- enabled=1
- gpgcheck=1
- gpgkey=https://yum.dockerproject.org/gpg
- EOF
-
-
-## saving docker images 
-docker save image-name > image-name.tar
-cat image-name.tar | docker load
-
-## https://codefresh.io/docker-tutorial/everyday-hacks-docker
- docker system prune
- docker volume rm $(docker volume ls -q -f "dangling=true")
- docker rm $(docker ps -q -f "status=exited")
- docker rmi $(docker images -q -f "dangling=true")
- docker run -it --rm alpine sh
-
- docker info --format "{{json .}}" | jq . 
-# show Plugins only
- docker info --format "{{json .Plugins}}" | jq .
-# list IP addresses for all containers connected to 'bridge' network
- docker network inspect bridge -f '{{json .Containers}}' | jq '.[] | {cont: .Name, ip: .IPv4Address}'
-
- watch -n 2 'docker ps --format "table {{.ID}}\t {{.Image}}\t {{.Status}}"'
-# get a shell into Docker host
- docker run --rm -it --privileged --pid=host walkerlee/nsenter -t 1 -m -u -i -n sh
-# get a shell into 'redis' container namespace
- docker run --rm -it --privileged --pid=container:redis walkerlee/nsenter -t 1 -m -u -i -n sh
-
-# Tap homebrew/completion to gain access to these
- brew tap homebrew/completions
+##  sudo pvs, and sudo pvdisplay
+##  sudo vgs, and sudo vgdisplay
+##  sudo lvs, and sudo lvdisplay
+##  
+##  lsblk
+##  sudo pvs
+##  sudo vgs
+##  sudo lvs
+##  sduo fdisk /dev/sda
+##    n - To create a new partition
+##    p - Choose primary partition 
+##    3 - Choose partition number (1-4)
+##    t - Change partition type
+##    8e - Choose type Linux LVM
+##    p - print partition tables
+##    w - write to disk
+##  sudo reboot
+##  # or 'sduo partprobe' to inform system of new partition
+##  sduo pvs
+##  sudo pvcreate /dev/sda3
+##  sudo pvs	# should now see new partition
+##  sudo vgextend VolGroupName /dev/sda3
+##  sudo vgs	# should see free volume
+##  lsblk 		# check new file size
+##  ## create new logical volume
+##  lvcreate -L 30G -n optVol VolGroup00
+##  mkfs.ext3 /dev/VolGroup00/optVol
+##  mount /dev/VolGroup00/optVol /opt/newDirectory/
+##  sudo reboot
+##  
+##     ### script changing lvms
+##     ## #!/bin/bash
+##     PARTITION=$(lsblk -a -d | awk 'NR>1{print $1}')
+##     /bin/echo -e "\n\np\n\n\n\nt\n\n8e\nw" " sudo fdisk /dev/$PARTITION
+##     suod partprobe
+##     sudo pvcreate /dev/$PARTITION
+##     sudo sfdisk -d
+
+
+
+##  # for detailed file system info use these commands:
+##  ## USE `df -hT` to get the fs type!!!!
+##  sudo fdisk -l
+##  sudo pvdisplay
+##  sudo vgdisplay
+##  sudo lvdisplay
+##  # to extend the partition
+##  sudo growpart /dev/xvda 1 ### notice the space between device name and partition number (get this from df -h)
+##  # grow the filesystem
+##  # for xfs filesystems use this tool: 
+##  sudo yum install xfsprogs
+##  sudo xfs_growfs -d <mount_point>  #### find <mount_point> with df -h
+##  # the xfs_grwofs command should be on RHEL by default....
+##  # LINKS:
+##  # AWS: https://docs.amazonaws.cn/en_us/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html
+##  # stack_overflow: https://stackoverflow.com/questions/26305376/resize2fs-bad-magic-number-in-super-block-while-trying-to-open
+##  
+##  ###############
+##  # tmux notes ##
+##  ###############
+##  # attach sessions --> tmux attach -t <session>
+##  # detach sessions --> ctrl+b d
+##  # list sessions   --> ctrl+b ls
+##  # quit sessions   --> ctrl+b & ##then comfirm at bottom
+##  # split screen    --> ctrl+b [&|"] 
+##  # change screen   --> ctrl+b <arrows>
+##  
+##  
+##  
+##  ###############
+##  ## databases ##
+##  ###############
+##  
+##  ############ mysql ##############
+##  # change a colum or value --> http://www.mysqltutorial.org/mysql-update-data.aspx 
+##  UPDATE `Param` SET Updated = '2019-09-17 11:35:45’
+##  
+##  # disconect users
+##  SELECT pg_terminate_backend(pg_stat_activity.pid)
+##  FROM pg_stat_activity
+##  WHERE pg_stat_activity.datname = 'TARGET_DB'
+##    AND pg_stat_activity.state = 'idle'
+##    AND pid <> pg_backend_pid();
+##  
+##  # check size
+##  select pg_size_pretty(pg_database_size('osm'));
+##  
+##  # create user
+##  CREATE USER myuser WITH PASSWORD 'secret_passwd';
+##  
+##  # create roll
+##  CREATE ROLL myuser WITH LOGIN PASSWORD 'secret_passwd';
+##  
+##  # check users and rolls
+##  SELECT 
+##        r.rolname, 
+##        ARRAY(SELECT b.rolname
+##              FROM pg_catalog.pg_auth_members m
+##              JOIN pg_catalog.pg_roles b ON (m.roleid = b.oid)
+##              WHERE m.member = r.oid) as memberof
+##  FROM pg_catalog.pg_roles r
+##  WHERE r.rolname NOT IN ('pg_signal_backend','rds_iam',
+##                          'rds_replication','rds_superuser',
+##                          'rdsadmin','rdsrepladmin')
+##  ORDER BY 1;
+##  
+##  # rename a database on the host
+##  alter database <target_db> rename to <new_name>;
+##  
+##  
+##  # to see the version of mysql
+##  SHOW VARIABLES LIKE "%version%";
+##  
+##  ####### postgresql ###########
+##  # list databases
+##  \list or \l
+##  # change db's:   most db's have defaults of template0, template1, and postgres
+##  \c <db_name>     ### example: \c postgres
+##  # listing tables after connecting to it
+##  \dt
+##  # drop database 
+##  PGPASSWORD="$DBPWD" psql -h "$DBHOST" -U "$DBUSER" -d "$DBNAME" <<-EOF
+##          SELECT pid, pg_terminate_backend(pid)
+##          FROM pg_stat_activity
+##          WHERE datname = current_database() AND pid <> pg_backend_pid();
+##  
+##          \c postgres
+##          DROP DATABASE IF EXISTS $DBNAME;
+##  
+##  #################### 
+##  ## end database junk 
+##  ####################
+##  
+##  
+##  
+##  #### home brew install ####
+##  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+##  
+##  #### get pip for python ####
+##  curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+##  sudo python get-pip.py
+##  
+##  #### install the aws cli ####
+##  # use pip
+##  pip install awscli
+##  
+##  
+##  
+##  
+##  ####################
+##  ## tigerVNC notes ##
+##  ####################
+##  # install this
+##  	sudo yum update -y
+##  	sudo yum install -y gnome-classic-session.noarch  
+##  	sudo yum groupinstall -y gnome-desktop ##sudo yum install -y gnome-desktop3-devel.x86_64
+##  	sudo yum install -y tigervnc.x86_64 tigervnc-server.x86_64
+##  
+##  # Start the vnc server
+##  	vncserver
+##  
+##  # Set up the tunnel on a new window:
+##  	# example command:
+##  	ssh -L <localport>:remote_host:remote_port -i /path/to/.pem <USER>@<proxy_ip> -N
+##  
+##  	# Real command:
+##  	ssh -L 35901:ip-10-0-102-88.ec2.internal:5901 -i /Users/jonathandale/z/key_file/key.pem ec2-user@ip_address -N
+##  
+##  # If firewalld is needed
+##  	sudo systemctl enable firewalld
+##  	sudo systemctl start firewalld
+##  	sudo firewall-cmd --permanent --zone=public --add-port=5900-5905/tcp
+##  	sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+##  	sudo systemctl daemon-reload
+##  
+##  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##  # ON AMAZON LINUX2 USE THIS — https://aws.amazon.com/premiumsupport/knowledge-center/ec2-linux-2-install-gui/
+##  
+##  sudo amazon-linux-extras install mate-desktop1.x
+##  sudo bash -c 'echo PREFERRED=/usr/bin/mate-session > /etc/sysconfig/desktop'
+##  echo "/usr/bin/mate-session" > ~/.Xclients && chmod +x ~/.Xclients
+##  sudo yum install -y tigervnc-server
+##  vncserver :1
+##  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@.service
+##  sudo sed -i 's/<USER>/ec2-user/' /etc/systemd/system/vncserver@.service
+##  sudo systemctl daemon-reload
+##  sudo systemctl enable vncserver@:1
+##  sudo systemctl start vncserver@:1
+##  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##  
+##  #########################
+##  ### google Chrome repo ##
+##  #########################
+##  # add the repo
+##  touch /etc/yum.repos.d/google-chrome.repo
+##  sudo tee /etc/yum.repos.d/google-chrome.repo <<-'EOF'
+##   [google-chrome]
+##   name=google-chrome
+##   baseurl=http://dl.google.com/linux/chrome/rpm/stable/$basearch
+##   enabled=1
+##   gpgcheck=1
+##   gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
+##   EOF
+##  
+##  # check that google-chrome.repo is enabled
+##  yum repolist all
+##  
+##  # install chrome
+##  yum search all chrome
+##  yum install -y google-chrome-stable.x86_64
+##  
+##  ########## end chrome ######################
+##  
+##  
+##  
+##  ############
+##  ## docker ##
+##  ############
+##  ## to install the latest version of Docker CE (community edition):
+##  sudo yum remove docker docker-common docker-selinux docker-engine
+##  sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+##  sudo yum install docker-ce
+##  
+##  
+##  #### ADD DOCKER REPO ####
+##  sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
+##   [dockerrepo]
+##   name=Docker Repository
+##   baseurl=https://yum.dockerproject.org/repo/main/centos/7/
+##   enabled=1
+##   gpgcheck=1
+##   gpgkey=https://yum.dockerproject.org/gpg
+##   EOF
+##  
+##  
+##  ## saving docker images 
+##  docker save image-name > image-name.tar
+##  cat image-name.tar | docker load
+##  
+##  ## https://codefresh.io/docker-tutorial/everyday-hacks-docker
+##   docker system prune
+##   docker volume rm $(docker volume ls -q -f "dangling=true")
+##   docker rm $(docker ps -q -f "status=exited")
+##   docker rmi $(docker images -q -f "dangling=true")
+##   docker run -it --rm alpine sh
+##  
+##   docker info --format "{{json .}}" | jq . 
+##  # show Plugins only
+##   docker info --format "{{json .Plugins}}" | jq .
+##  # list IP addresses for all containers connected to 'bridge' network
+##   docker network inspect bridge -f '{{json .Containers}}' | jq '.[] | {cont: .Name, ip: .IPv4Address}'
+##  
+##   watch -n 2 'docker ps --format "table {{.ID}}\t {{.Image}}\t {{.Status}}"'
+##  # get a shell into Docker host
+##   docker run --rm -it --privileged --pid=host walkerlee/nsenter -t 1 -m -u -i -n sh
+##  # get a shell into 'redis' container namespace
+##   docker run --rm -it --privileged --pid=container:redis walkerlee/nsenter -t 1 -m -u -i -n sh
+##  
+##  # Tap homebrew/completion to gain access to these
+##   brew tap homebrew/completions
+##   
+##  # Install completions for docker suite
+##   brew install docker-completion
+##   brew install docker-compose-completion
+##   brew install docker-machine-completion
+##  
+##  
+##  
+##  ##########
+##  ## helm ##
+##  ##########
+##  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+##  chmod -x get_helm.sh
+##  ./get_helm.sh
+##  
+##  
+##  ################
+##  ## kubernetes ##
+##  ################
+##  # view the cluster information
+##  kubectl config view
+##  ## contexts is the cluster kubectl commands run against
+##  kubectl config get-contexts
+##  kubectl config use-contexts <new-context>
+##  ###  kubens and kubectx easily change namespaces and clusters 
+##  # https://github.com/ahmetb/kubectx
+##  ---
+##  # To quickly change the default namespace, you can set up the following alias: 
+##  # Then, you can switch between namespaces like this: kcd some-namespace.
+##  alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
+##  
+##  
+##  ## see info about cluster
+##  kubectl -n kube-system get cm kubeadm-config -oyaml
+##  ---
+##  ## list deployments in services namespace
+##  kubectl --context k8.prod.domain_name.io --namespace services get deployments 
+##  ---
+##  ## see the environment vars 
+##  kubectl --context k8.prod.domain_name.io --namespace services describe cm global-config-kv | grep -A 2 ARTIFACT_SERVICE_DB
+##  ---
+##  ## get the namespaces in context 
+##  kubectl --context k8.prod.domain_name.io get namespaces
+##  ---
+##  ## get nodes in context and namespace
+##  kubectl --context k8.prod.domain_name.io --namespace service get nodes
+##  ---  
+##  # To quickly change the default namespace, you can set up the following alias: 
+##  # Then, you can switch between namespaces like this: kcd some-namespace.
+##  alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
+##  
+##  
+##  ####################
+##  ## Cluster tokens ##
+##  ####################
+##  
+##  # use 'kubeadm token --help'
+##  sudo kubeadm token list
+##  sudo kubeadm token create ## option --print-join-command
+##  
+##  # To join a cluser
+##  
+##  sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
+##  
+##  ## (control plane node)
+##  kubeadm join <endpoint-ip-or-dns>:<port> \
+##  --token <valid-bootstrap-token> \
+##  --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash> \
+##  --control-plane \
+##  --certificate-key <certificate-key>
+##  
+##  ## (worker node)
+##  kubeadm join <endpoint-ip-or-dns>:<port> \
+##  --token <valid-bootstrap-token> \
+##  --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
+##  
+##  
+##  # ^^^ to generate the join command above ^^^
+##  
+##  # <endpoint-ip-or-dns>:<port> can be retrieved in "kubeadm-config" configmap in "kube-system" namespace, port should be 6443
+##  	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint" or "advertiseAddress" or "apiEndpoints"
+##  
+##  # <valid-bootstrap-token> --> You can not recreate, make a new one
+##  	$ kubeadm token create
+##  
+##  # <ca-cert-sha256-hash> --> Use either command to generate
+##  	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
+##  	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+##  
+##  # <certificate-key> --> The value expires after 2 hours, mkae a new one
+##  	$ kubeadm init phase upload-certs --upload-certs
+##  
+##  ####################
+##  ## Cluster tokens ## 
+##  ####################
+##  
+##  
+##  # Check if the cluster api is listining on 6443
+##  nc -z <master_node_hostname> 6443 && echo 'ok'
+##  
+##  ## taints and tolerations, add taints to nodes, tolerations to pods
+##  # add taint
+##  kubectl taint nodes node1 key=value:NoSchedule
+##  # remove taint
+##  kubectl taint nodes node1 key:NoSchedule-
+##  
+##  #######################
+##  ## remove pods/nodes ##
+##  #######################
+##  kubectl delete pod <pod-name>   # options [ --grace-period=0 --force ]
+##  
+##  #  Node removal
+##  kubectl get nodes
+##  kubectl drain <nodeToBeRemoved>
+##  kubectl delete node <nodeToBeRemoved>
+##  ##  Remove join/init settings on node you removed 
+##  kubeadm reset
+##  
+##  ########## end ##########
  
-# Install completions for docker suite
- brew install docker-completion
- brew install docker-compose-completion
- brew install docker-machine-completion
-
-
-
-##########
-## helm ##
-##########
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-chmod -x get_helm.sh
-./get_helm.sh
-
-
-################
-## kubernetes ##
-################
-# view the cluster information
-kubectl config view
-## contexts is the cluster kubectl commands run against
-kubectl config get-contexts
-kubectl config use-contexts <new-context>
-###  kubens and kubectx easily change namespaces and clusters 
-# https://github.com/ahmetb/kubectx
----
-# To quickly change the default namespace, you can set up the following alias: 
-# Then, you can switch between namespaces like this: kcd some-namespace.
-alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
-
-
-## see info about cluster
-kubectl -n kube-system get cm kubeadm-config -oyaml
----
-## list deployments in services namespace
-kubectl --context k8.prod.domain_name.io --namespace services get deployments 
----
-## see the environment vars 
-kubectl --context k8.prod.domain_name.io --namespace services describe cm global-config-kv | grep -A 2 ARTIFACT_SERVICE_DB
----
-## get the namespaces in context 
-kubectl --context k8.prod.domain_name.io get namespaces
----
-## get nodes in context and namespace
-kubectl --context k8.prod.domain_name.io --namespace service get nodes
----  
-# To quickly change the default namespace, you can set up the following alias: 
-# Then, you can switch between namespaces like this: kcd some-namespace.
-alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
-
-
-####################
-## Cluster tokens ##
-####################
-
-# use 'kubeadm token --help'
-sudo kubeadm token list
-sudo kubeadm token create ## option --print-join-command
-
-# To join a cluser
-
-sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
-
-## (control plane node)
-kubeadm join <endpoint-ip-or-dns>:<port> \
---token <valid-bootstrap-token> \
---discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash> \
---control-plane \
---certificate-key <certificate-key>
-
-## (worker node)
-kubeadm join <endpoint-ip-or-dns>:<port> \
---token <valid-bootstrap-token> \
---discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
-
-
-# ^^^ to generate the join command above ^^^
-
-# <endpoint-ip-or-dns>:<port> can be retrieved in "kubeadm-config" configmap in "kube-system" namespace, port should be 6443
-	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint" or "advertiseAddress" or "apiEndpoints"
-
-# <valid-bootstrap-token> --> You can not recreate, make a new one
-	$ kubeadm token create
-
-# <ca-cert-sha256-hash> --> Use either command to generate
-	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
-	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-
-# <certificate-key> --> The value expires after 2 hours, mkae a new one
-	$ kubeadm init phase upload-certs --upload-certs
-
-####################
-## Cluster tokens ## 
-####################
-
-
-# Check if the cluster api is listining on 6443
-nc -z <master_node_hostname> 6443 && echo 'ok'
-
-## taints and tolerations, add taints to nodes, tolerations to pods
-# add taint
-kubectl taint nodes node1 key=value:NoSchedule
-# remove taint
-kubectl taint nodes node1 key:NoSchedule-
-
-#######################
-## remove pods/nodes ##
-#######################
-kubectl delete pod <pod-name>   # options [ --grace-period=0 --force ]
-
-#  Node removal
-kubectl get nodes
-kubectl drain <nodeToBeRemoved>
-kubectl delete node <nodeToBeRemoved>
-##  Remove join/init settings on node you removed 
-kubeadm reset
-
-########## end ##########
-
-
-
-
+ 
+ 
+ 

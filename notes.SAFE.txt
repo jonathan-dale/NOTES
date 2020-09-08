@@ -177,7 +177,7 @@
 ##  sudo setenforce 0
 ##  sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
 ##  
-##  ## openssl
+##  ## openssl https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/
 ##  # remove passphrase on key
 ##    openssl rsa -in privateKey.pem -out newPrivateKey.pem
 ##  # change PW on a key

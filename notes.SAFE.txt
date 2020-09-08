@@ -178,9 +178,43 @@
 ##  sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
 ##  
 ##  ## openssl
+##  # remove passphrase on key
+##    openssl rsa -in privateKey.pem -out newPrivateKey.pem
 ##  # change PW on a key
-##  openssl rsa -des3 -in server.key -out server.key.new
-##  
+##    openssl rsa -des3 -in server.key -out server.key.new
+##  # generate a new priate key and CSR
+##    openssl req -out CSR.csr -new -newkey rsa:2046 -nodes -keyout privateKey.key
+##  # generate a self-signed cert
+##    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+##  # generate CSR for existing private key
+##    openssl req -out CSR.csr -key privateKey.key -new
+##  # generate CSR based on existing certificate
+##    openssl x509 -x509toreq -in certificate.crt -out CSR.csr -signkey privateKey.key
+##  ##
+##  # check CSR
+##    openssl req -text -noout -verify -in CSR.csr
+##  # check private key
+##    openssl rsa -in privateKey.key -check
+##  # check certificate
+##    openssl x509 -in certificate.crt -text -noout
+##  # check pkcs#12 file (.pfx or .p12)
+##    openssl pkcs12 -in keyStore.p12
+##  # Check the md5 sum of public key, match it to whats in the CSR or private key
+##    openssl x509 -noout -in [certificate.crt | privateKey.key | CSR.csr ] | openssl md5
+##  # Check ssl connection (all certs and internediates should be displayed)
+##    openssl s_client -connect www.paypal.com:443
+##  ##
+##  # convrting 
+##  # convert DER file (.crt .cer .der) to PEM and reverse
+##    openssl x509 -inform der -in certificate.cer -out certificate.pem
+##    openssl x509 -outform pem -in certificate.pem -out certificate.der
+##  # convert PKCS#12 file (.pfx .p12) containing a private key and certificates to PEM \
+##		 -nocerts to only output private key
+##		 -nokeys to only output certificates
+##    openssl pkcs12 -in keyStore.pfx -out keyStore.pem -nodes
+##
+##
+##
 ##  ## private subnet CIDR blocks
 ##  # 10.0.0.0 - 10.255.255.255 (10/8 prefex)
 ##  # 172.16.0.0 - 172.31.255.255 (172.16/12 prefix)

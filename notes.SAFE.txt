@@ -2,9 +2,18 @@
 # Notes and other usefull commands
 ##################################
 
-
-##  # PS1 
-##  #[\u@ \e[0;37m dev.1 \e[m \W] $
+## ##################
+## ## .bashr file  ##
+## ##################
+## borring pormpt: [\u@ \e[0;37m dev.1 \e[m \W] $
+##
+## ## bad ass prompt below
+## STOP_COLOR="\[\033[0m\]"
+## START_TEAL="\[\033[36m\]"
+## START_RED="\[\033[31m\]"
+## START_WHITE="\[\033[37m\]"
+## START_GREEN="\[\033[32m\]"
+## PS1="$START_TEAL[\d \T]$STOP_COLOR $START_RED dalej@\h$START_WHITE:\W$ $STOP_COLOR"
 ##  
 ##  #############
 ##  # GIT NOTES #

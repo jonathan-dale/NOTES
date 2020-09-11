@@ -56,7 +56,7 @@ sysctl --system
 
 ## disable selinux
 sudo setenforce 0
-sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
+sudo sed -i 's/^SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
 
 
 ## disable swap
@@ -66,7 +66,7 @@ sudo swapoff -a
 
 #### deploy cluster
 
-sudo kubeadm init –pod-network-cidr=10.244.0.0/16   ### this may take some time, SAVE THE JOIN MESSAGE AND TOKEN, use to join other nodes to cluster.
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16   ### this may take some time, SAVE THE JOIN MESSAGE AND TOKEN, use to join other nodes to cluster.
 
 
 ## make .kube/config

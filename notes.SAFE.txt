@@ -264,6 +264,7 @@
 ##  ######################
 ##  ## filesystem notes ##
 ##  ######################
+## on mac use 'diskutils list'
 ## usefull commands
 ##  sudo pvs, and sudo pvdisplay
 ##  sudo vgs, and sudo vgdisplay

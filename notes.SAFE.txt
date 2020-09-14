@@ -73,7 +73,24 @@
 ##  # -n = number 
 ##  # -w = match the whole word
 ##  # -l (lower case) 
-##  
+##  # -e expression follows
+##  # grep -v -e '^ *' -e '^$' /etc/httpd/conf/httpd.conf   ## removes comments and blank lines, can be redirected to new file with no comments. 
+## 
+##  ##########
+##  ## regex #
+##  ##########
+##  # '^ <pattern>'    # starts with pattern
+##  # '<pattern> $'    # find pattern at end of line
+##  # [characters]     # match any char's in the brancket like [aeiou] or [0-9] 
+##  # grep 'B[oO][bB]  # search Bob, BoB, BOb, BOB 
+##  # grep '^$'        # finds blank lines
+##  # grep '^linux'    # finds lines start w/ linux
+##  # grep 'linux$'    # finds liens end w/ linux
+##  # grep '^linux$'   # lines with only linux
+##  # grep '[0-9][0-9]' # search pairs of numeric digits
+##  # grep -v -e '^ *' -e '^$' /etc/httpd/conf/httpd.conf
+## 
+## 
 ##  # turn off highlighting search 
 ##  # :noh
 ##  

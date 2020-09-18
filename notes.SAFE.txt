@@ -561,6 +561,8 @@
 ##  # Then, you can switch between namespaces like this: kcd some-namespace.
 ##  alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
 ##  
+##  ## Use the explain command for info
+##     k explain pod.spec.containers
 ##  
 ##  ## see info about cluster
 ##  kubectl -n kube-system get cm kubeadm-config -oyaml
@@ -626,6 +628,12 @@
 ##  ## Cluster tokens ## end
 ##  ####################
 ##  
+##  ################################
+##  ## general cluster information #
+##  ################################
+##  kubectl cluster-info
+##  kubectl cluster-info dump
+## 
 ##  
 ##  # Check if the cluster api is listining on 6443
 ##  nc -z <master_node_hostname> 6443 && echo 'ok'

@@ -154,6 +154,12 @@
 ##  ## on mac ---> sed -i '' "s/old_text/new_text/g" <file>
 ##  # delete all empty lines from a file called /tmp/data.txt
 ##  $ sed '/^$/d' /tmp/data.txt > /tmp/output.txt
+##
+##  ## advanced search and replace
+##  :s/foo/bar/		# replace the first occurrence of foo on the current line with bar.
+##  :s/foo/bar/g	# replace all occurrences of foo on the current line with bar.
+##  :%s/foo/bar/g	# replace all occurrences of foo in the current file with bar. Leaving off the g at the end only replaces the first occurrence of foo on each line of the current file.
+##  :%s/foo//g		# delete all occurrences of foo in the current file. Leaving off the percent sign (%), of course, only does this for the current line.
 ##  
 ##  ## rsync
 ##  # push

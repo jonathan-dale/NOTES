@@ -51,6 +51,10 @@
 ##  ################
 ##  ## shell foo ###
 ##  ################
+##
+##  ## bash commands
+##  command-1 && command-2 ## executes command-2 only when command-1 is successful
+##  command-1 || command-2 ## executes command-2 only when command-1 is not successful
 ##  
 ##  # redirection
 ##  CMD > /dev/null 2>&1

@@ -624,15 +624,15 @@
 ##  # <certificate-key> --> The value expires after 2 hours, mkae a new one
 ##  	$ kubeadm init phase upload-certs --upload-certs
 ##  
-##  ####################
-##  ## Cluster tokens ## end
-##  ####################
 ##  
 ##  ################################
 ##  ## general cluster information #
 ##  ################################
 ##  kubectl cluster-info
 ##  kubectl cluster-info dump
+##  
+##  ## gets kube-scheduler inf (shows if this master host is the leader) - leader elect option
+##  kubectl get endpoints kube-scheduler -n kube-system -o yaml
 ## 
 ##  
 ##  # Check if the cluster api is listining on 6443
@@ -670,6 +670,9 @@
 ##      done
 ##  done
 ##  
+##
+##  ## to filter jason output
+##  kubectl get pods -o=jsonpath="{.items[*]['metadata.name', 'metadata.namespace']}"
 ##  ########## end ##########
  
  

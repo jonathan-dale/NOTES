@@ -602,8 +602,10 @@
 ##  sudo kubeadm token list
 ##  sudo kubeadm token create ## option --print-join-command
 ##  
-##  # To join a cluser
-##  
+##  # To join a cluser **NOTE-(control plane nodes have one extra arg)
+##  # print joun command from master
+##  # sudo kubeadm token create --print-join-command
+##  # example
 ##  sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
 ##  
 ##  ## (control plane node)
@@ -628,12 +630,27 @@
 ##  	$ kubeadm token create
 ##  
 ##  # <ca-cert-sha256-hash> --> Use either command to generate
-##  	$ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
-##  	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+##  	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt -noout | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
+##  	$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt -noout | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 ##  
 ##  # <certificate-key> --> The value expires after 2 hours, mkae a new one
 ##  	$ kubeadm init phase upload-certs --upload-certs
 ##  
+##  ### here is a function to script the jouin command
+##  function print_join_command { 
+##    kubeadm token create
+##    CLUSTER_ENDPOINT=$(kubectl -n kube-system get cm kubeadm-config -o yaml | grep advertiseAddress | awk '{print $2}')
+##    CLUSTER_TOKEN=$(kubeadm token list | awk END'{print $1}')
+##    TOKEN_CA_CERT_HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt -noout | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+##      ## not working yet
+##      # CERTIFICATE_KEY=$(sudo kubeadm init phase upload-certs --upload-certs | awk 'END {print}') ## might print extra un-wanted lines
+##    
+##     cat <<EOF kubeadm join $CLUSTER_ENDPOINT:6443 \
+##                   --token $CLUSTER_TOKEN \
+##                   --discovery-token-ca-cert-hash sha256: $TOKEN_CA_CERT_HASH
+##              EOF
+##  }
+## 
 ##  
 ##  ################################
 ##  ## general cluster information #

@@ -676,12 +676,17 @@
 ##  #######################
 ##  kubectl delete pod <pod-name>   # options [ --grace-period=0 --force ]
 ##  
-##  #  Node removal
-##  kubectl get nodes
-##  kubectl drain <nodeToBeRemoved>
-##  kubectl delete node <nodeToBeRemoved>
-##  ##  Remove join/init settings on node you removed 
-##  kubeadm reset
+##  # Node removal
+##     kubectl get nodes
+##     kubectl drain <nodeToBeRemoved>
+##     kubectl delete node <nodeToBeRemoved>
+##     kubeadm reset # (on the removed node)
+##
+##  # cordon nodes - prevent pods from scheduling onto the node
+##      kubectl get nodes -w
+##      kubectl drain [node_name] --ignore-daemonsets
+##  # then remove cordon
+##      kubectl uncordon [node_name]
 ##  
 ##  
 ##  ###############################
@@ -696,6 +701,22 @@
 ##          kubectl get -n $NAMESPACE -o=yaml $TYPE > $DIR/$NAMESPACE/$TYPE.yaml
 ##      done
 ##  done
+## 
+## 
+##  # etcdctl to back up etcd (cluster state)
+##  # get etcd untar and add bins to path - wget https://github.com/etcd-io/etcd/releases/download/v3.3.12/etcd-v3.3.12-linux-amd64.tar.gz
+##     sudo etcdctl ETCDCTL_API=3 snapshot save snapshot.db \
+##        --cacert /etc/kubernetes/pki/etcd/ca.crt \
+##        --cert /etc/kubernetes/pki/etcd/server.crt \
+##        --key /etc/kubernetes/pki/etcd/server.key
+##   
+##  # check snapshot
+##     ETCDCTL_API=3 etcdctl --write-out=table snapshot status snapshot.db
+##  
+##  # You must save the certificates with the snapshot.db 
+##  # Then copy them to safe place like S3 or other server
+##      sudo tar -zcvf etcd.tar.gz /etc/kubernetes/pki/etcd
+##  
 ##  
 ##
 ##  ## to filter jason output

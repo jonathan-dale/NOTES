@@ -56,6 +56,12 @@
 ##  command-1 && command-2 ## executes command-2 only when command-1 is successful
 ##  command-1 || command-2 ## executes command-2 only when command-1 is not successful
 ##  
+##  
+##  check if user is root
+##  AM_I_ROOT=$(id -u)
+##  [[ $AM_I_ROOT != 0 ]] && die "must be root"
+##
+##
 ##  # redirection
 ##  CMD > /dev/null 2>&1
 ##  # STDOUT of the command 'CMD' redirects to /dev/null, 
@@ -573,6 +579,14 @@
 ##  
 ##  ## Use the explain command for info
 ##     k explain pod.spec.containers
+## 
+##   RBAC -- To see perms on your user Use:
+##       kubectl auth can-i VERB [TYPE/NAME]
+##   Example:
+##   [master-node]$ k auth can-i create pods
+##   yes
+##   [master-node]$ k auth can-i create nodes
+##   yes
 ##  
 ##  ## see info about cluster
 ##  kubectl -n kube-system get cm kubeadm-config -oyaml
@@ -603,25 +617,25 @@
 ##  sudo kubeadm token create ## option --print-join-command
 ##  
 ##  # To join a cluser **NOTE-(control plane nodes have one extra arg)
-##  # print joun command from master
+##  # print join command from master
 ##  # sudo kubeadm token create --print-join-command
 ##  # example
 ##  sudo kubeadm join 172.31.123.86:6443 --token <TOKEN.CODE> --discovery-token-ca-cert-hash sha256:<HASH>
 ##  
 ##  ## (control plane node)
 ##  kubeadm join <endpoint-ip-or-dns>:<port> \
-##  --token <valid-bootstrap-token> \
-##  --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash> \
-##  --control-plane \
-##  --certificate-key <certificate-key>
+##    --token <valid-bootstrap-token> \
+##    --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash> \
+##    --control-plane \
+##    --certificate-key <certificate-key>
 ##  
 ##  ## (worker node)
 ##  kubeadm join <endpoint-ip-or-dns>:<port> \
-##  --token <valid-bootstrap-token> \
-##  --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
+##    --token <valid-bootstrap-token> \
+##    --discovery-token-ca-cert-hash sha256:<ca-cert-sha256-hash>
 ##  
 ##  
-##  # ^^^ to generate the join command above ^^^
+##  # *** to generate the join command above 
 ##  
 ##  # <endpoint-ip-or-dns>:<port> can be retrieved in "kubeadm-config" configmap in "kube-system" namespace, port should be 6443
 ##  	$ kubectl -n kube-system get cm kubeadm-config -o yaml --> look for "controlPlaneEndpoint" or "advertiseAddress" or "apiEndpoints"
@@ -666,8 +680,8 @@
 ##  nc -z <master_node_hostname> 6443 && echo 'ok'
 ##  
 ##  ## taints and tolerations, add taints to nodes, tolerations to pods
-##  # add taint
-##  kubectl taint nodes node1 key=value:NoSchedule
+##  # add taint - this means no pod can schedule onto node1 that dose not tolerate the taint.
+##  kubectl taint nodes node1 key=value:NoSchedule    
 ##  # remove taint
 ##  kubectl taint nodes node1 key:NoSchedule-
 ##  

@@ -606,6 +606,11 @@
 ##  # To quickly change the default namespace, you can set up the following alias: 
 ##  # Then, you can switch between namespaces like this: kcd some-namespace.
 ##  alias kcd='kubectl config set-context $(kubectl config current-context) --namespace '
+##
+##  # Shortcuts
+##    export do="--dry-run=client -o yaml"
+##    # then we can run
+##    k run pod1 --image=nginx $do
 ##  
 ##  
 ##  ####################

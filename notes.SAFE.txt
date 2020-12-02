@@ -565,13 +565,15 @@
 ##  ################
 ##  ## kubernetes ## k8s
 ##  ################
+##  ## contexts is the cluster kubectl commands run against
 ##  # view the cluster information
 ##  kubectl config view
-##  ## contexts is the cluster kubectl commands run against
 ##  kubectl config get-contexts
 ##  kubectl config use-contexts <new-context>
+##
 ##  ###  kubens and kubectx easily change namespaces and clusters 
 ##  # https://github.com/ahmetb/kubectx
+##  - brew install kubectx
 ##  ---
 ##  # To quickly change the default namespace, you can set up the following alias: 
 ##  # Then, you can switch between namespaces like this: kcd some-namespace.

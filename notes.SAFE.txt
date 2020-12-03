@@ -319,9 +319,6 @@
 ##     suod partprobe
 ##     sudo pvcreate /dev/$PARTITION
 ##     sudo sfdisk -d
-
-
-
 ##  # for detailed file system info use these commands:
 ##  ## USE `df -hT` to get the fs type!!!!
 ##  sudo fdisk -l
@@ -339,6 +336,12 @@
 ##  # AWS: https://docs.amazonaws.cn/en_us/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html
 ##  # stack_overflow: https://stackoverflow.com/questions/26305376/resize2fs-bad-magic-number-in-super-block-while-trying-to-open
 ##  
+##
+##    ###################
+##    ## ansible  junk ##
+##    ###################
+##    ansible-vault view /path/to/encrypted_file --vault-password /path/to/vault/PW/file
+##
 ##  ###############
 ##  # tmux notes ##
 ##  ###############

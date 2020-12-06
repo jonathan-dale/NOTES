@@ -15,20 +15,20 @@
 ## START_GREEN="\[\033[32m\]"
 ## PS1="$START_TEAL[\d \T]$STOP_COLOR $START_RED dalej@\h$START_WHITE:\W$ $STOP_COLOR"
 ##  
-##  #############
-##  # GIT NOTES #
-##  #############
+##  ############
+##  # GIT Junk #
+##  ############
 ##  # generate a key: ssh-keygen -b 4096 -C <name>
 ##  git reset HEAD .
 ##  git status
 ##  git diff
 ##  
-##  # to pull while in a differnet directory
+##  # pull a repo in a differnet directory
 ##  pushd /path/to/repo && git pull && popd
-##  	example: pushd /home/centos/my-repo && git pull && popd
+##  example: pushd /home/centos/my-repo && git pull && popd
 ##  
 ##  ---
-##  # this allows you to change the email
+##  # this allows you to change the email to obscure git commits
 ##  git config --global user.email "526473+gb96@users.noreply.github.com"
 ##  git rebase -i
 ##  git commit --amend --reset-author
@@ -59,7 +59,7 @@
 ##  
 ##  check if user is root
 ##  AM_I_ROOT=$(id -u)
-##  [[ $AM_I_ROOT != 0 ]] && die "must be root"
+##  [[ $AM_I_ROOT != 0 ]] && die "must be root"     ## a 'die' function must be defined
 ##
 ##
 ##  # redirection
@@ -104,7 +104,7 @@
 ##  # turn off highlighting search 
 ##  # :noh
 ##  
-##  # make a random value for password
+##  # make a random password
 ##  head /dev/urandom | sha256sum | cut -c1-16
 ##  
 ##  ## awk
@@ -168,7 +168,7 @@
 ##  ## advanced search and replace
 ##  :s/foo/bar/		# replace the first occurrence of foo on the current line with bar.
 ##  :s/foo/bar/g	# replace all occurrences of foo on the current line with bar.
-##  :%s/foo/bar/g	# replace all occurrences of foo in the current file with bar. Leaving off the g at the end only replaces the first occurrence of foo on each line of the current file.
+##  :%s/foo/bar/g	# replace all occurrences of foo in the current file with bar. The 'g' makes it global to the entire file
 ##  :%s/foo//g		# delete all occurrences of foo in the current file. Leaving off the percent sign (%), of course, only does this for the current line.
 ##  
 ##  ## rsync
@@ -211,15 +211,20 @@
 ##  # find all A CNAME's 
 ##  host -al <domain.name> | grep <what u want>
 ##  	# ex: host -al turtle.oi.io | grep jdale ----> returns hosts in dns that have name like jdale
-##  
-##  ## SELinux junk
+##
+##  ################# 
+##  ## SELinux Junk #
+##  #################
 ##  restorecon /var/www/html*					#restores files to default SELinux security contexts
 ##  cat /var/log/audit/audit.log | grep AVC | audit2allow -m httpd  #tells you what's being blocked (or allowed when setenforce=0)
 ##  # disable selinux
 ##  sudo setenforce 0
 ##  sudo sed -i ‘s/^SELINUX=enforcing$/SELINUX=permissive/’ /etc/selinux/config
 ##  
-##  ## openssl https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/
+##  ################# 
+##  ## openssl Junk #
+##  #################
+##  ## https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/
 ##  # remove passphrase on key
 ##    openssl rsa -in privateKey.pem -out newPrivateKey.pem
 ##  # change PW on a key
@@ -257,6 +262,9 @@
 ##
 ##
 ##
+##  ################# 
+##  ## subnet Junk #
+##  #################
 ##  ## private subnet CIDR blocks
 ##  # 10.0.0.0 - 10.255.255.255 (10/8 prefex)
 ##  # 172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
@@ -275,11 +283,28 @@
 ##  
 ##  # change user password cli
 ##  aws iam update-login-profile --user-name jonathan.dale --password <password>
+##
+## pull and refresh AWS creds with this file:
+##	#!/usr/bin/env bash
+##	
+##	ADDR='http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance'
+##	
+##	# Pull the credentials
+##	CREDENTIALS=$(curl -s "$ADDR" -E ~/creds/my-cert.crt --key ~/creds/my-key.key --cacert /home/aws/cert.pem | python -m json.tool)
+##	[[ "$?" == 0 ]] || { echo 1>&2 "Couldnt get credentials..."; exit 1; }
+##	
+##	# Create the creds file
+##	echo '[default]'
+##	echo "$CREDENTIALS" | sed -rn 's/^\s*"AccessKeyId":\s*"([^"]+)".*$/AWS_ACCESS_KEY_ID=\1/p'
+##	echo "$CREDENTIALS" | sed -rn 's/^\s*"SecretAccessKey":\s*"([^"]+)".*$/AWS_SECRET_ACCESS_KEY=\1/p'
+##	echo "$CREDENTIALS" | sed -rn 's/^\s*"SessionToken":\s*"([^"]+)".*$/AWS_SESSION_TOKEN=\1/p'
+##	
+##	exit 0
 ##  
 ##  
-##  ######################
-##  ## filesystem notes ##
-##  ######################
+##  #####################
+##  ## filesystem Junk ##
+##  #####################
 ## on mac use 'diskutils list'
 ## usefull commands
 ##  sudo pvs, and sudo pvdisplay
@@ -312,13 +337,13 @@
 ##  mount /dev/VolGroup00/optVol /opt/newDirectory/
 ##  sudo reboot
 ##  
-##     ### script changing lvms
-##     ## #!/bin/bash
-##     PARTITION=$(lsblk -a -d | awk 'NR>1{print $1}')
-##     /bin/echo -e "\n\np\n\n\n\nt\n\n8e\nw" " sudo fdisk /dev/$PARTITION
-##     suod partprobe
-##     sudo pvcreate /dev/$PARTITION
-##     sudo sfdisk -d
+## ### to change lvm's with a script
+## 		#!/bin/bash
+## 		PARTITION=$(lsblk -a -d | awk 'NR>1{print $1}')
+## 		/bin/echo -e "\n\np\n\n\n\nt\n\n8e\nw" " sudo fdisk /dev/$PARTITION
+## 		suod partprobe
+## 		sudo pvcreate /dev/$PARTITION
+## 		sudo sfdisk -d
 ##  # for detailed file system info use these commands:
 ##  ## USE `df -hT` to get the fs type!!!!
 ##  sudo fdisk -l
@@ -337,14 +362,14 @@
 ##  # stack_overflow: https://stackoverflow.com/questions/26305376/resize2fs-bad-magic-number-in-super-block-while-trying-to-open
 ##  
 ##
-##    ###################
-##    ## ansible  junk ##
-##    ###################
-##    ansible-vault view /path/to/encrypted_file --vault-password /path/to/vault/PW/file
+##  ###################
+##  ## ansible  Junk ##
+##  ###################
+##  ansible-vault view /path/to/encrypted_file --vault-password /path/to/vault/PW/file
 ##
-##  ###############
-##  # tmux notes ##
-##  ###############
+##  ##############
+##  # tmux Junk ##
+##  ##############
 ##  # attach sessions --> tmux attach -t <session>
 ##  # detach sessions --> ctrl+b d
 ##  # list sessions   --> ctrl+b ls
@@ -418,18 +443,6 @@
 ##  ## end database junk 
 ##  ####################
 ##  
-##  
-##  
-##  #### home brew install ####
-##  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-##  
-##  #### get pip for python ####
-##  curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-##  sudo python get-pip.py
-##  
-##  #### install the aws cli ####
-##  # use pip
-##  pip install awscli
 ##  
 ##  
 ##  

@@ -1,3 +1,0 @@
-[submodule "k8s/robot-shop"]
-	path = k8s/robot-shop
-	url = https://github.com/linuxacademy/robot-shop

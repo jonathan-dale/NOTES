@@ -212,6 +212,23 @@
 ##  host -al <domain.name> | grep <what u want>
 ##  	# ex: host -al turtle.oi.io | grep jdale ----> returns hosts in dns that have name like jdale
 ##
+##
+##  ##########################
+##  # Install python and pip #
+##  ##########################
+##  --version 2
+##  sudo add-apt-repository universe
+##  sudo apt update
+##  sudo apt install python2
+##  curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+##  sudo python2 get-pip.py
+##  pip2 --version
+##  --version 3
+##  sudo apt update
+##  sudo apt install python3-pip
+##  pip3 --version
+##
+##
 ##  ################# 
 ##  ## SELinux Junk #
 ##  #################

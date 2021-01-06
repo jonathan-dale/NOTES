@@ -212,6 +212,14 @@
 ##  host -al <domain.name> | grep <what u want>
 ##  	# ex: host -al turtle.oi.io | grep jdale ----> returns hosts in dns that have name like jdale
 ##
+##  ## yum-cron
+##  # for more info see 'man yum-cron'
+##  sudo yum install yum-cron
+##  sudo systemctl enable yum-cron.service
+##  sudo systemctl start yum-cron.service
+##  sudo systemctl status yum-cron.service
+##  sudo vi /etc/yum/yum-cron.conf
+##  ## set: "apply_updates = yes"
 ##
 ##  ##########################
 ##  # Install python and pip #

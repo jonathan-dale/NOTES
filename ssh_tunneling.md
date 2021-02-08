@@ -62,7 +62,7 @@ Host bastion
   IdentityFile ~/.ssh/id_rsa
 
 Host jenkins
-  HostName 3.32.14.87
+  HostName 10.10.1.2
   Port 22
   User ec2-user
   IdentityFile ~/.ssh/id_rsa

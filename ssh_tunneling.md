@@ -45,6 +45,16 @@ Host cw_tunnel
   IdentityFile ~/.ssh/id_rsa
   LocalForward 9292 127.0.0.1:9292
 
+# auto tunelling to securehost (remote host) via jumphost (gateway)
+# we tell ssh that when it establishes a connection to securehost to do so using
+# the stdin/stdout of the ProxyCommand as a transport. The ProxyCommand then tells
+# the system to first ssh to our bastion host and open a netcat connection to host
+# %h (hostname supplied to ssh) on port %p (port supplied to ssh).
+Host jumphost
+  ProxyCommand none
+Host securehost
+  ProxyCommand ssh jumphost -W %h:%p
+
 Host bastion
   HostName 3.32.14.88
   Port 22
@@ -58,20 +68,11 @@ Host jenkins
   IdentityFile ~/.ssh/id_rsa
 
 ```
+Now we can ssh into jenkins through the bastion server
+
 ```
 ssh -J bastion jenkins
 ```
-This will open a tunnel from bastion to jenkins server
 
 
-```
-# auto tunelling to securehost (remote host) via jumphost (gateway)
-# we tell ssh that when it establishes a connection to securehost to do so using
-# the stdin/stdout of the ProxyCommand as a transport. The ProxyCommand then tells
-# the system to first ssh to our bastion host and open a netcat connection to host
-# %h (hostname supplied to ssh) on port %p (port supplied to ssh).
-Host jumphost
-  ProxyCommand none
-Host securehost
-  ProxyCommand ssh jumphost -W %h:%p
-```
+

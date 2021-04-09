@@ -75,4 +75,33 @@ ssh -J bastion jenkins
 ```
 
 
+So now lets chain multiple hops in one config file
+
+```
+Host internal-proxy
+    HostName 10.20.30.253
+    Port 22
+    User nopriv
+    IdentityFile /home/nopriv/.ssh/id_rsa
+Host external-proxy
+    HostName 10.100.2.200
+    Port 22
+    User nopriv
+    IdentityFile /home/nopriv/.ssh/id_rsa
+    ProxyJump internal-proxy
+Host next-hop
+    HostName 10.100.2.210
+    Port 22
+    User nopriv
+    IdentityFile /home/nopriv/.ssh/id_rsa
+    ProxyJump external-proxy
+Host last-hop
+    HostName 10.100.2.240
+    Port 22
+    User nopriv
+    IdentityFile /home/nopriv/.ssh/id_rsa
+    ProxyJump next-hop
+```
+
+Now we can use `ssh last-hop` and what hapens is the connection is chained through `internal-proxy`, `external-proxy`, `next-hop`, then finally to `last-hop`
 

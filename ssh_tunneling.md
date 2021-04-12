@@ -10,7 +10,7 @@ where,
 
 This will forward all local port 9906 traffic to port 3306 on the remote dev.example.com server
 
-###Multi-Hop Tunelling:
+### Multi-Hop Tunelling:
 
 Tunnel from localhost to host1 and from host1 to host2:
 
@@ -27,6 +27,30 @@ Assume you have you have a web server running on 10.1.0.93 in a private network 
 ```
 ssh -L 80:localhost:80 root@198.1.1.34 -t ssh -L 80:localhost:80 root@10.1.0.93
 ```
+
+### Multi hop tunneling using a config file located here: `~/.ssh/config`  
+I recomend not using `ForwardAgent yes` by default in the config file.  
+Instead `ssh -A` turns on agent forwarding for a single session.
+
+```
+Host bastion
+  HostName 3.32.14.88
+  Port 22
+  User ec2-user
+  IdentityFile ~/.ssh/id_rsa
+
+Host jenkins
+  HostName 10.10.1.2
+  Port 22
+  User ec2-user
+  IdentityFile ~/.ssh/id_rsa
+```
+Now we can ssh into jenkins through the bastion server
+
+```
+ssh -J bastion jenkins
+```
+
 
 Example SSH Config:
 
@@ -60,28 +84,8 @@ Host securehost
   ProxyCommand ssh jumphost -W %h:%p
 ```
 
-### Multi hop tunneling
-```
-Host bastion
-  HostName 3.32.14.88
-  Port 22
-  User ec2-user
-  IdentityFile ~/.ssh/id_rsa
 
-Host jenkins
-  HostName 10.10.1.2
-  Port 22
-  User ec2-user
-  IdentityFile ~/.ssh/id_rsa
-```
-Now we can ssh into jenkins through the bastion server
-
-```
-ssh -J bastion jenkins
-```
-
-
-#### So now lets chain multiple hops in one config file  
+#### Chain multiple hops using a single config file  
     - refernece : https://medium.com/maverislabs/proxyjump-the-ssh-option-you-probably-never-heard-of-2d7e41d43464
 
 ```

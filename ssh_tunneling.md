@@ -1,4 +1,4 @@
-###Single hop tunelling:
+### Single hop tunelling:
 
 ```
 ssh -f -N -L 9906:127.0.0.1:3306 user@dev.example.com
@@ -44,17 +44,24 @@ Host cw_tunnel
   User root
   IdentityFile ~/.ssh/id_rsa
   LocalForward 9292 127.0.0.1:9292
+```
+### Using PoryxCommand
+ auto tunelling to securehost (remote host) via jumphost (gateway)
+ we tell ssh that when it establishes a connection to securehost to do so using
+ the stdin/stdout of the ProxyCommand as a transport. The ProxyCommand then tells
+ the system to first ssh to our bastion host and open a netcat connection to host
+ %h (hostname supplied to ssh) on port %p (port supplied to ssh).
+ Like this:
 
-# auto tunelling to securehost (remote host) via jumphost (gateway)
-# we tell ssh that when it establishes a connection to securehost to do so using
-# the stdin/stdout of the ProxyCommand as a transport. The ProxyCommand then tells
-# the system to first ssh to our bastion host and open a netcat connection to host
-# %h (hostname supplied to ssh) on port %p (port supplied to ssh).
+```
 Host jumphost
   ProxyCommand none
 Host securehost
   ProxyCommand ssh jumphost -W %h:%p
+```
 
+### Multi hop tunneling
+```
 Host bastion
   HostName 3.32.14.88
   Port 22
@@ -66,7 +73,6 @@ Host jenkins
   Port 22
   User ec2-user
   IdentityFile ~/.ssh/id_rsa
-
 ```
 Now we can ssh into jenkins through the bastion server
 
@@ -104,5 +110,7 @@ Host last-hop
     ProxyJump next-hop
 ```
 
-Now we can use `ssh last-hop` and what hapens is the connection is chained through `internal-proxy`, `external-proxy`, `next-hop`, then finally to `last-hop`
+Now we can use `ssh last-hop` and the connection is chained through `internal-proxy`, `external-proxy`, `next-hop`, then finally to `last-hop`
+
+I recomend not turning `ForwardAgent yes` on by default. Instead `ssh -A` turns on agent forwarding for a single session.
 

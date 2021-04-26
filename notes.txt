@@ -106,6 +106,8 @@
 ##  
 ##  # make a random password
 ##  head /dev/urandom | sha256sum | cut -c1-16
+##  ##gives special uppers, lowers, specials, and numbers
+##  openssl rand -base64 32
 ##  
 ##  ## awk
 ##  # removes the 1st line awk 

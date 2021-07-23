@@ -224,6 +224,23 @@
 ##  ## set: "apply_updates = yes"
 ##
 ##  ##########################
+##  ## systemctl cheet sheet #
+##  ##########################
+##  systemctl start [name.service]
+##  systemctl stop [name.service]
+##  systemctl restart [name.service]
+##  systemctl reload [name.service]
+##  systemctl status [name.service]
+##  systemctl is-active [name.service]
+##  
+##  systemctl list-units --type service --all
+##  systemctl list-unit-files --type=service
+##  
+##    # how long services take to come up
+##  systemd-analyze blame
+##  
+##  
+##  ##########################
 ##  # Install python and pip #
 ##  ##########################
 ##  --version 2
